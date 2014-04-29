@@ -1558,9 +1558,12 @@ ostream& OOO_CORE_MODEL::operator <<(ostream& os, const PhysicalRegisterOperandI
 }
 
 void OooCore::flush_tlb(Context& ctx) {
+
     foreach(i, threadcount) {
         threads[i]->dtlb.flush_all();
         threads[i]->itlb.flush_all();
+		// Jeongseob: add stat
+		threads[i]->thread_stats.tlb_flushes++;
     }
 }
 

@@ -541,6 +541,7 @@ namespace OOO_CORE_MODEL {
 		StatObj<W64> fp_reg_writes;
 
 		StatObj<W64> ctx_switches;
+		StatObj<W64> tlb_flushes;
 
 		OooCoreThreadStats(const char *name, Statable *parent)
 			: Statable(name, parent)
@@ -568,6 +569,7 @@ namespace OOO_CORE_MODEL {
 			  , fp_reg_reads("fp_reg_reads", this)
 			  , fp_reg_writes("fp_reg_writes", this)
 			  , ctx_switches("ctx_switches", this)
+			  , tlb_flushes("tlb_flushes", this)
         {}
     };
 
