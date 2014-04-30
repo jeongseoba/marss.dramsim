@@ -3351,6 +3351,10 @@ void AtomCore::check_ctx_changes()
     }
 }
 
+void AtomCore::check_process_switches()
+{
+}
+
 /*W8 AtomCore::get_coreid()
 {
     return coreid;

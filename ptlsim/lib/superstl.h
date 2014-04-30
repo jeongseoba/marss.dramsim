@@ -782,6 +782,17 @@ namespace superstl {
       }
     }
 
+	// Jeongseob
+	bool find(const T value) {
+		foreach (i, length) {
+			if(data[i] == value){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
     void clear_and_free() {
         foreach (i, length) {
             T t = data[i];

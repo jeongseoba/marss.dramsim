@@ -61,6 +61,7 @@ W64 iterations = 0;
 W64 total_uops_executed = 0;
 W64 total_uops_committed = 0;
 W64 total_insns_committed = 0;
+W64 total_user_insns_committed = 0;
 W64 total_basic_blocks_committed = 0;
 
 W64 last_printed_status_at_ticks;
@@ -1398,7 +1399,8 @@ extern "C" uint8_t ptl_simulate() {
 #endif
 	machine->run(config);
 
-	if (config.stop_at_insns <= total_insns_committed || config.kill == true
+	// if (config.stop_at_insns <= total_insns_committed || config.kill == true
+	if (config.stop_at_insns <= total_user_insns_committed || config.kill == true
 			|| config.stop == true || config.stop_at_cycle < sim_cycle) {
 		machine->stopped = 1;
 	}
@@ -1479,7 +1481,7 @@ extern "C" void update_progress() {
     double insns_per_sec = (total_insns_committed - last_printed_status_at_insn) / seconds;
 
     stringbuf sb;
-    sb << "Completed " << intstring(sim_cycle, 13) << " cycles, " << intstring(total_insns_committed, 13) << " commits: " <<
+    sb << "Completed " << intstring(sim_cycle, 13) << " cycles, (" << intstring(total_user_insns_committed, 13) << ", " << intstring(total_insns_committed, 13) << ") commits: " <<
       intstring((W64)cycles_per_sec, 9) << " Hz, " << intstring((W64)insns_per_sec, 9) << " insns/sec";
 
     sb << ": rip";

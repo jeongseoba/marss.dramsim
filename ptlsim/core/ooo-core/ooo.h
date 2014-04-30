@@ -955,6 +955,9 @@ namespace OOO_CORE_MODEL {
         OooCore& core;
         OooCore& getcore() { return core; }
         ThreadContext& getthread() { return *this; }
+		
+		target_ulong curr_pid;
+		dynarray<target_ulong> processes;
 
         PTLsimStats *stats_;
 
@@ -1037,6 +1040,7 @@ namespace OOO_CORE_MODEL {
         // statistics:
         W64 total_uops_committed;
         W64 total_insns_committed;
+        W64 total_user_insns_committed;
         int dispatch_deadlock_countdown;
 #ifdef MULTI_IQ
         int issueq_count[4]; // number of occupied issuequeue entries
@@ -1290,6 +1294,7 @@ namespace OOO_CORE_MODEL {
         void update_stats();
 
         void check_ctx_changes();
+        void check_process_switches();
 
 		void dump_configuration(YAML::Emitter &out) const;
     };

@@ -223,6 +223,7 @@ int BaseMachine::run(PTLsimConfig& config)
             cores[cur_core]->reset();
         }
         cores[cur_core]->check_ctx_changes();
+        cores[cur_core]->check_process_switches();
     }
     first_run = 0;
 
@@ -268,7 +269,8 @@ int BaseMachine::run(PTLsimConfig& config)
         sim_cycle++;
         iterations++;
 
-        if unlikely (config.stop_at_insns <= total_insns_committed ||
+        // if unlikely (config.stop_at_insns <= total_insns_committed ||
+        if unlikely (config.stop_at_insns <= total_user_insns_committed ||
                 config.stop_at_cycle <= sim_cycle) {
             ptl_logfile << "Stopping simulation loop at specified limits (", sim_cycle, " cycles, ", total_insns_committed, " commits)", endl;
             exiting = 1;

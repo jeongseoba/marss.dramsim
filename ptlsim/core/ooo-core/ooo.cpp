@@ -134,6 +134,10 @@ ThreadContext::ThreadContext(OooCore& core_, W8 threadid_, Context& ctx_)
 
     thread_stats.set_default_stats(user_stats);
     reset();
+
+	// Jeongseob
+	processes.push(ctx.cr[3]);
+	curr_pid = ctx.cr[3];
 }
 
 /**
@@ -169,6 +173,7 @@ void ThreadContext::reset() {
 
     total_uops_committed = 0;
     total_insns_committed = 0;
+    total_user_insns_committed = 0;
     dispatch_deadlock_countdown = 0;
 #ifdef MULTI_IQ
     foreach(i, 4){
@@ -1569,6 +1574,22 @@ void OooCore::flush_tlb(Context& ctx) {
 
 void OooCore::flush_tlb_virt(Context& ctx, Waddr virtaddr) {
     /* FIXME AVADH DEFCORE */
+}
+
+void OooCore::check_process_switches() 
+{
+    foreach(i, threadcount) {
+        Context& ctx = threads[i]->ctx;
+		if (! threads[i]->processes.find(ctx.cr[3]) ) {
+			threads[i]->processes.push(ctx.cr[3]);
+		}
+
+		if ( threads[i]->curr_pid != ctx.cr[3] ) {
+			// cout << "context_switch occurs [" << std::hex << threads[i]->curr_pid << " -> " << ctx.cr[3] << std::dec << "]" << endl;
+			threads[i]->curr_pid = ctx.cr[3];
+			threads[i]->thread_stats.process_switches++;
+		}
+	}
 }
 
 void OooCore::check_ctx_changes()

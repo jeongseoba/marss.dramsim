@@ -2267,6 +2267,10 @@ int ReorderBufferEntry::commit() {
     }
 
     if likely (uop.eom) {
+		if ( ! thread.ctx.kernel_mode ) {
+			total_user_insns_committed++;
+			thread.total_user_insns_committed++;
+		}
         total_insns_committed++;
         thread.thread_stats.commit.insns++;
         thread.total_insns_committed++;

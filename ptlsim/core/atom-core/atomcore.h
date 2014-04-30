@@ -1042,6 +1042,7 @@ namespace ATOM_CORE_MODEL {
         void reset();
         bool runcycle(void*);
         void check_ctx_changes();
+        void check_process_switches();
         void flush_tlb(Context& ctx);
         void flush_tlb_virt(Context& ctx, Waddr virtaddr);
         void dump_state(ostream& os);

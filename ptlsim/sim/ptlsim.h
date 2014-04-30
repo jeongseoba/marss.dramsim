@@ -173,6 +173,7 @@ extern W64 iterations;
 extern W64 total_uops_executed;
 extern W64 total_uops_committed;
 extern W64 total_insns_committed;
+extern W64 total_user_insns_committed;
 extern W64 total_basic_blocks_committed;
 
 // #define TRACE_RIP

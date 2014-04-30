@@ -28,6 +28,7 @@ namespace Core {
 
             virtual void reset() = 0;
             virtual void check_ctx_changes() = 0;
+            virtual void check_process_switches() = 0;
             virtual void flush_tlb(Context& ctx) = 0;
             virtual void flush_tlb_virt(Context& ctx, Waddr virtaddr) = 0;
             virtual void dump_state(ostream& os) = 0;
