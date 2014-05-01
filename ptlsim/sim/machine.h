@@ -12,6 +12,7 @@
 #define MACHINE_H
 
 #include <ptlsim.h>
+#include <process-stats.h>
 
 #define YAML_KEY_VAL(out, key, val) \
 	out << YAML::Key << key << YAML::Value << val;
@@ -44,6 +45,10 @@ struct ConnectionDef {
 };
 
 struct BaseMachine: public PTLsimMachine {
+
+	Hashtable<const char*, ProcessStats*, 1> process_stats;
+	//dynarray< ProcessStats* > process_stats;
+
     dynarray<Core::BaseCore*> cores;
     dynarray<Memory::Controller*> controllers;
     dynarray<Memory::Interconnect*> interconnects;

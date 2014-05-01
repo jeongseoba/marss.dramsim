@@ -224,6 +224,7 @@ int BaseMachine::run(PTLsimConfig& config)
         }
         cores[cur_core]->check_ctx_changes();
         cores[cur_core]->check_process_switches();
+
     }
     first_run = 0;
 

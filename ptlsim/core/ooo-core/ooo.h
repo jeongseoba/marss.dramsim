@@ -958,6 +958,7 @@ namespace OOO_CORE_MODEL {
 		
 		target_ulong curr_pid;
 		dynarray<target_ulong> processes;
+		char proc_name[32];
 
         PTLsimStats *stats_;
 

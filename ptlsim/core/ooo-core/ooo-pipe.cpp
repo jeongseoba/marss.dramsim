@@ -2267,10 +2267,16 @@ int ReorderBufferEntry::commit() {
     }
 
     if likely (uop.eom) {
+		// Jeongseob
 		if ( ! thread.ctx.kernel_mode ) {
 			total_user_insns_committed++;
 			thread.total_user_insns_committed++;
 		}
+			
+		ProcessStats** pstat = core.machine.process_stats.get(thread.proc_name);
+		assert(pstat);
+		(*pstat)->insns++;
+
         total_insns_committed++;
         thread.thread_stats.commit.insns++;
         thread.total_insns_committed++;

@@ -130,7 +130,7 @@ ThreadContext::ThreadContext(OooCore& core_, W8 threadid_, Context& ctx_)
 
     thread_stats.commit.ipc.add_elem(&thread_stats.commit.insns);
     thread_stats.commit.ipc.add_elem(&core_.core_stats.cycles);
-    /* thread_stats.commit.ipc.enable_periodic_dump(); */
+    thread_stats.commit.ipc.enable_periodic_dump(); 
 
     thread_stats.set_default_stats(user_stats);
     reset();
@@ -138,6 +138,12 @@ ThreadContext::ThreadContext(OooCore& core_, W8 threadid_, Context& ctx_)
 	// Jeongseob
 	processes.push(ctx.cr[3]);
 	curr_pid = ctx.cr[3];
+	
+	snprintf(proc_name, 32, "process_%lx", ctx.cr[3]);
+	ProcessStats* pstat = new ProcessStats(proc_name, &core.machine);
+	core.machine.process_stats.add(proc_name, pstat);
+	pstat->set_default_stats(user_stats);
+
 }
 
 /**
@@ -535,16 +541,22 @@ bool OooCore::runcycle(void* none) {
       * to the interrupt handler.
       */
 
+
     foreach (i, threadcount) {
         ThreadContext* thread = threads[i];
         bool current_interrupts_pending = thread->ctx.check_events();
         thread->handle_interrupt_at_next_eom = current_interrupts_pending;
         thread->prev_interrupts_pending = current_interrupts_pending;
 
+		ProcessStats** pstat = machine.process_stats.get(thread->proc_name);
+		assert(pstat);
+
         if(thread->ctx.kernel_mode) {
             thread->thread_stats.set_default_stats(kernel_stats);
+			(*pstat)->set_default_stats(kernel_stats);
         } else {
             thread->thread_stats.set_default_stats(user_stats);
+			(*pstat)->set_default_stats(user_stats);
         }
     }
 
@@ -937,6 +949,14 @@ bool OooCore::runcycle(void* none) {
     }
 
     core_stats.cycles++;
+	
+	foreach (i, threadcount) {
+        ThreadContext* thread = threads[i];
+		ProcessStats** pstat = machine.process_stats.get(thread->proc_name);
+		assert(pstat);
+		(*pstat)->cycles++;
+	}
+
 
     return exiting;
 }
@@ -1582,12 +1602,30 @@ void OooCore::check_process_switches()
         Context& ctx = threads[i]->ctx;
 		if (! threads[i]->processes.find(ctx.cr[3]) ) {
 			threads[i]->processes.push(ctx.cr[3]);
+
+			// register the process stat
+			// char proc_name[32];
+			snprintf(threads[i]->proc_name, 32, "process_%lx", ctx.cr[3]);
+			ProcessStats* pstat = new ProcessStats(threads[i]->proc_name, &machine);
+			machine.process_stats.add(threads[i]->proc_name, pstat);
 		}
 
 		if ( threads[i]->curr_pid != ctx.cr[3] ) {
 			// cout << "context_switch occurs [" << std::hex << threads[i]->curr_pid << " -> " << ctx.cr[3] << std::dec << "]" << endl;
+
 			threads[i]->curr_pid = ctx.cr[3];
 			threads[i]->thread_stats.process_switches++;
+
+			snprintf(threads[i]->proc_name, 32, "process_%lx", ctx.cr[3]);
+			ProcessStats** pstat = machine.process_stats.get(threads[i]->proc_name);
+			assert(pstat);
+
+			if (threads[i]->ctx.kernel_mode) {
+				(*pstat)->set_default_stats(kernel_stats);
+			} else {
+				(*pstat)->set_default_stats(user_stats);
+			}
+			(*pstat)->schedules++;
 		}
 	}
 }
