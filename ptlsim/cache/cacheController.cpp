@@ -37,6 +37,7 @@
 #include <cacheController.h>
 
 #include <machine.h>
+#include <ooo.h>
 
 /* Remove following comments to debug this file's code
 
@@ -48,7 +49,7 @@
 */
 
 using namespace Memory;
-
+using namespace OOO_CORE_MODEL;
 
 CacheController::CacheController(W8 coreid, const char *name,
 		MemoryHierarchy *memoryHierarchy, CacheType type) :
@@ -104,6 +105,7 @@ CacheController::CacheController(W8 coreid, const char *name,
         type_ = L1_I_CACHE;
     else if (( strstr(get_name(), "L1_D") !=NULL) )
         type_ = L1_D_CACHE;
+
 }
 
 CacheController::~CacheController()
@@ -565,6 +567,21 @@ bool CacheController::cache_access_cb(void *arg)
 							kernel_req);
 				}
 
+				// Jeongseob
+				if ( type_ == L3_CACHE ) {
+					OooCore *thecore = (OooCore*)(memoryHierarchy_->get_machine().cores[queueEntry->request->get_coreid()]);
+					char *proc_name = thecore->threads[queueEntry->request->get_threadid()]->proc_name;
+					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(proc_name);
+					assert(pstat);
+				
+					if(type == MEMORY_OP_READ) {
+						N_STAT_UPDATE((*pstat)->cache.hit.read.hit, ++, kernel_req);
+					} else if(type == MEMORY_OP_WRITE) {
+						N_STAT_UPDATE((*pstat)->cache.hit.write.hit, ++, kernel_req);
+					}
+				}
+
+
                 /*
                  * Create a new memory request with
                  * opration type MEMORY_OP_UPDATE and
@@ -612,6 +629,20 @@ bool CacheController::cache_access_cb(void *arg)
 				signal = &cacheMiss_;
 				delay = cacheAccessLatency_;
 				queueEntry->eventFlags[CACHE_MISS_EVENT]++;
+	
+				// Jeongseob
+				if ( type_ == L3_CACHE ) {
+					OooCore *thecore = (OooCore*)(memoryHierarchy_->get_machine().cores[queueEntry->request->get_coreid()]);
+					char *proc_name = thecore->threads[queueEntry->request->get_threadid()]->proc_name;
+					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(proc_name);
+					assert(pstat);
+				
+					if(type == MEMORY_OP_READ) {
+						N_STAT_UPDATE((*pstat)->cache.miss.read, ++, kernel_req);
+					} else {
+						N_STAT_UPDATE((*pstat)->cache.miss.write, ++, kernel_req);
+					}
+				}
 
 				if(type == MEMORY_OP_READ) {
 					N_STAT_UPDATE(new_stats.cpurequest.count.miss.read, ++,
