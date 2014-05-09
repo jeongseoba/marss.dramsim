@@ -137,7 +137,7 @@ itlb_walk_finish:
     assert(request != NULL);
 
     request->init(core.get_coreid(), threadid, pteaddr, 0, sim_cycle,
-            true, 0, 0, Memory::MEMORY_OP_READ);
+            true, 0, 0, Memory::MEMORY_OP_READ, proc_name);
     request->set_coreSignal(&core.icache_signal);
 
     waiting_for_icache_fill_physaddr = floor(pteaddr, ICACHE_FETCH_GRANULARITY);
@@ -599,8 +599,9 @@ bool ThreadContext::fetch() {
             Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
             assert(request != NULL);
 
+
             request->init(core.get_coreid(), threadid, physaddr, 0, sim_cycle,
-                    true, 0, 0, Memory::MEMORY_OP_READ);
+                    true, 0, 0, Memory::MEMORY_OP_READ, proc_name );
             request->set_coreSignal(&core.icache_signal);
 
             hit = core.memoryHierarchy->access_cache(request);
@@ -2179,7 +2180,7 @@ int ReorderBufferEntry::commit() {
 
             request->init(core.get_coreid(), threadid, lsq->physaddr << 3, 0,
                     sim_cycle, false, uop.rip.rip, uop.uuid,
-                    Memory::MEMORY_OP_WRITE);
+                    Memory::MEMORY_OP_WRITE, thread.proc_name);
             request->set_coreSignal(&core.dcache_signal);
 
             assert(core.memoryHierarchy->access_cache(request));

@@ -1611,7 +1611,7 @@ void OooCore::check_process_switches()
 		}
 
 		if ( threads[i]->curr_pid != ctx.cr[3] ) {
-			// cout << "context_switch occurs [" << std::hex << threads[i]->curr_pid << " -> " << ctx.cr[3] << std::dec << "]" << endl;
+			ptl_logfile << "Ctx switched " << sim_cycle << " cycles, [" << std::hex << threads[i]->curr_pid << " -> " << ctx.cr[3] << std::dec << "]" << endl;
 
 			threads[i]->curr_pid = ctx.cr[3];
 			threads[i]->thread_stats.process_switches++;

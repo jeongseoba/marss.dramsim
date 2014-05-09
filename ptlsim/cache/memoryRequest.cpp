@@ -50,7 +50,8 @@ void MemoryRequest::init(W8 coreId,
 		bool isInstruction,
 		W64 ownerRIP,
 		W64 ownerUUID,
-		OP_TYPE opType)
+		OP_TYPE opType,
+		char* procName)
 {
 	coreId_ = coreId;
 	threadId_ = threadId;
@@ -62,6 +63,7 @@ void MemoryRequest::init(W8 coreId,
 	refCounter_ = 0; // or maybe 1
 	opType_ = opType;
 	isData_ = !isInstruction;
+	procName_ = procName;
 
 	if(history) delete history;
 	history = new stringbuf();
@@ -81,6 +83,7 @@ void MemoryRequest::init(MemoryRequest *request)
 	refCounter_ = 0; // or maybe 1
 	opType_ = request->opType_;
 	isData_ = request->isData_;
+	procName_ = request->procName_;
 
 	if(history) delete history;
 	history = new stringbuf();

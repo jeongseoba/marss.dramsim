@@ -31,8 +31,20 @@ struct ProcessStats : public Statable
 
 		struct miss : public Statable
 		{
-			StatObj<W64> read;
-			StatObj<W64> write;
+			struct miss_sub : public Statable
+			{
+				StatObj<W64> inst;
+				StatObj<W64> data;
+
+				miss_sub(const char *name, Statable *parent)
+					: Statable(name, parent)
+					  , inst("inst", this)
+					  , data("data", this)
+				{}
+			};
+
+			miss_sub read;
+			miss_sub write;
 
 			miss(Statable *parent)
 				: Statable("miss", parent)

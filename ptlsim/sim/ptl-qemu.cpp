@@ -1556,6 +1556,7 @@ static void cpu_fast_fwded(Context& ctx)
             others_halted |= (t_ctx.halted);
 
 		all_halted_or_stopped &= (t_ctx.stopped || t_ctx.halted ||
+		// all_halted_or_stopped &= (t_ctx.stopped ||
 				!qemu_cpu_has_work(&t_ctx));
     }
 

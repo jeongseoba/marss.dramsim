@@ -569,9 +569,9 @@ bool CacheController::cache_access_cb(void *arg)
 
 				// Jeongseob
 				if ( type_ == L3_CACHE ) {
-					OooCore *thecore = (OooCore*)(memoryHierarchy_->get_machine().cores[queueEntry->request->get_coreid()]);
-					char *proc_name = thecore->threads[queueEntry->request->get_threadid()]->proc_name;
-					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(proc_name);
+
+					assert (queueEntry->request->get_procname() );
+					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(queueEntry->request->get_procname());
 					assert(pstat);
 				
 					if(type == MEMORY_OP_READ) {
@@ -634,13 +634,26 @@ bool CacheController::cache_access_cb(void *arg)
 				if ( type_ == L3_CACHE ) {
 					OooCore *thecore = (OooCore*)(memoryHierarchy_->get_machine().cores[queueEntry->request->get_coreid()]);
 					char *proc_name = thecore->threads[queueEntry->request->get_threadid()]->proc_name;
+					// TODO: FIX ME
+					// The thread may be changed via scheduling
 					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(proc_name);
 					assert(pstat);
 				
 					if(type == MEMORY_OP_READ) {
-						N_STAT_UPDATE((*pstat)->cache.miss.read, ++, kernel_req);
+
+						if ( queueEntry->request->is_instruction() ) {
+							N_STAT_UPDATE((*pstat)->cache.miss.read.inst, ++, kernel_req);
+						} else {
+							N_STAT_UPDATE((*pstat)->cache.miss.read.data, ++, kernel_req);
+						}
+
 					} else {
-						N_STAT_UPDATE((*pstat)->cache.miss.write, ++, kernel_req);
+						
+						if ( queueEntry->request->is_instruction() ) {
+							N_STAT_UPDATE((*pstat)->cache.miss.write.inst, ++, kernel_req);
+						} else {
+							N_STAT_UPDATE((*pstat)->cache.miss.write.data, ++, kernel_req);
+						}
 					}
 				}
 

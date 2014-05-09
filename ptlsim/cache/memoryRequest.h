@@ -85,7 +85,8 @@ class MemoryRequest: public selfqueuelink
 				bool isInstruction,
 				W64 ownerRIP,
 				W64 ownerUUID,
-				OP_TYPE opType);
+				OP_TYPE opType,
+				char* procName=NULL);
 
 		bool is_same(W8 coreid,
 				W8 threadid,
@@ -113,6 +114,8 @@ class MemoryRequest: public selfqueuelink
 		void set_physical_address(W64 addr) { physicalAddress_ = addr; }
 
 		int get_coreid() { return int(coreId_); }
+		
+		char* get_procname() { return procName_; }
 
 		int get_threadid() { return int(threadId_); }
 
@@ -180,6 +183,7 @@ class MemoryRequest: public selfqueuelink
 		OP_TYPE opType_;
 		stringbuf *history;
         Signal *coreSignal_;
+		char* procName_;
 
 };
 
