@@ -632,11 +632,9 @@ bool CacheController::cache_access_cb(void *arg)
 	
 				// Jeongseob
 				if ( type_ == L3_CACHE ) {
-					OooCore *thecore = (OooCore*)(memoryHierarchy_->get_machine().cores[queueEntry->request->get_coreid()]);
-					char *proc_name = thecore->threads[queueEntry->request->get_threadid()]->proc_name;
-					// TODO: FIX ME
-					// The thread may be changed via scheduling
-					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(proc_name);
+					
+					assert (queueEntry->request->get_procname() );
+					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(queueEntry->request->get_procname());
 					assert(pstat);
 				
 					if(type == MEMORY_OP_READ) {
