@@ -3,6 +3,32 @@
 
 struct ProcessStats : public Statable
 {
+	struct tlb : public Statable
+	{
+		struct tlb_stat : public Statable
+		{
+			StatObj<W64> hit;
+			StatObj<W64> miss;
+
+			tlb_stat(const char *name, Statable *parent)
+				: Statable(name, parent)
+				  , hit("hit", this)
+				  , miss("miss", this)
+			{}
+		};
+
+		tlb_stat dtlb;
+		tlb_stat itlb;
+
+		tlb(Statable *parent)
+			: Statable("tlb", parent)
+			  , dtlb("dtlb", this)
+			  , itlb("itlb", this)
+		{}
+
+	} tlb;
+
+
 	struct cache : public Statable
 	{
 		struct hit : public Statable
@@ -66,6 +92,7 @@ struct ProcessStats : public Statable
 
 	ProcessStats(const char *name, Statable *parent)
 		: Statable(name, parent)
+		  , tlb(this)
 		  , cache(this)
 		  , cycles("cycles", this)
 		  , insns("insns", this)

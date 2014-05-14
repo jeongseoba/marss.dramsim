@@ -953,7 +953,6 @@ bool OooCore::runcycle(void* none) {
 	foreach (i, threadcount) {
         ThreadContext* thread = threads[i];
 		ProcessStats** pstat = machine.process_stats.get(thread->proc_name);
-		assert(pstat);
 		(*pstat)->cycles++;
 	}
 

@@ -1889,6 +1889,8 @@ bool ReorderBufferEntry::probetlb(LoadStoreQueueEntry& state, Waddr& origaddr, W
 #ifdef DISABLE_TLB
     bool handle_next_page = false;
 #endif
+	ProcessStats** pstat = core->machine.process_stats.get(thread.proc_name);
+	assert(pstat);
 
     addrgen(state, origaddr, virtpage, ra, rb, rc, pteupdate, addr, exception, pfec, annul);
 
@@ -1906,6 +1908,7 @@ bool ReorderBufferEntry::probetlb(LoadStoreQueueEntry& state, Waddr& origaddr, W
         tlb_miss_init_cycle = sim_cycle;
         tlb_walk_level = thread.ctx.page_table_level_count();
         thread.thread_stats.dcache.dtlb.misses++;
+		(*pstat)->tlb.dtlb.miss++;
 
         return false;
     }
@@ -1916,6 +1919,7 @@ bool ReorderBufferEntry::probetlb(LoadStoreQueueEntry& state, Waddr& origaddr, W
      * in pipeline.
      */
     thread.thread_stats.dcache.dtlb.hits++;
+	(*pstat)->tlb.dtlb.hit++;
 #endif
 
     if unlikely (exception) {

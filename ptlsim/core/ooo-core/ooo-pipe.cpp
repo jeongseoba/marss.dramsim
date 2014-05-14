@@ -79,6 +79,9 @@ bool ThreadContext::probeitlb(Waddr icache_addr) {
 #ifdef DISABLE_TLB
     return true;
 #endif
+	
+	ProcessStats** pstat = core.machine.process_stats.get(proc_name);
+	assert(pstat);
 
     if(!itlb.probe(icache_addr, threadid)) {
 
@@ -89,12 +92,13 @@ bool ThreadContext::probeitlb(Waddr icache_addr) {
         itlb_walk_level = ctx.page_table_level_count();
         itlb_miss_init_cycle = sim_cycle;
         thread_stats.dcache.itlb.misses++;
-
+		(*pstat)->tlb.itlb.miss++;
         return false;
     }
 
     /* Its not an exception and its not tlb miss */
     thread_stats.dcache.itlb.hits++;
+	(*pstat)->tlb.itlb.hit++;
     return true;
 }
 
