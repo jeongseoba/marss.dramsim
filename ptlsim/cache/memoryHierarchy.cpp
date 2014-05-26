@@ -346,7 +346,7 @@ void MemoryHierarchy::free_message(Message* msg)
 }
 
 void MemoryHierarchy::annul_request(W8 coreid,
-		W8 threadid, int robid, W64 physaddr,
+		W8 threadid, target_ulong processid, int robid, W64 physaddr,
 		bool is_icache, bool is_write)
 {
     /*
@@ -355,7 +355,7 @@ void MemoryHierarchy::annul_request(W8 coreid,
 	 * address with pending requests and flush them.
      */
 	MemoryRequest* memRequest = get_free_request(coreid);
-	memRequest->init(coreid, threadid, physaddr, robid, sim_cycle, is_icache,
+	memRequest->init(coreid, threadid, processid, physaddr, robid, sim_cycle, is_icache,
 			-1, -1, (is_write ? MEMORY_OP_WRITE : MEMORY_OP_READ));
 	cpuControllers_[coreid]->annul_request(memRequest);
 	//foreach(i, allControllers_.count()) {

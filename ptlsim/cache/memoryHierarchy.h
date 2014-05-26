@@ -195,6 +195,7 @@ namespace Memory {
 	// to remove the requests if rob eviction has occured
 	void annul_request(W8 coreid,
 			W8 threadid,
+			target_ulong processid,
 			int robid,
 			W64 physaddr,
 			bool is_icache,

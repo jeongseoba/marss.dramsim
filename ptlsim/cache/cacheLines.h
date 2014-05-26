@@ -34,19 +34,25 @@ namespace Memory {
 
     struct CacheLine
     {
+		bool accessed;
+		target_ulong pid;
         W64 tag;
         /* This is a generic variable used by all caches to represent its
          * coherence state */
         W8 state;
 
-        void init(W64 tag_t) {
+        void init(W64 tag_t, target_ulong pid_t = 0) {
             tag = tag_t;
             if (tag == (W64)-1) state = 0;
+			pid = pid_t;
+			accessed = false;
         }
 
         void reset() {
             tag = -1;
             state = 0;
+			pid = 0;
+			accessed = false;
         }
 
         void invalidate() { reset(); }
@@ -54,6 +60,7 @@ namespace Memory {
         void print(ostream& os) const {
             os << "Cacheline: tag[", (void*)tag, "] ";
             os << "state[", state, "] ";
+            os << "pid[", pid, "] ";
         }
     };
 

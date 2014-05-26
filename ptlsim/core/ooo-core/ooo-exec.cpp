@@ -1756,7 +1756,7 @@ int ReorderBufferEntry::issueload(LoadStoreQueueEntry& state, Waddr& origaddr, W
     Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
     assert(request != NULL);
 
-    request->init(core.get_coreid(), threadid, state.physaddr << 3, idx, sim_cycle,
+    request->init(core.get_coreid(), threadid, thread.curr_pid, state.physaddr << 3, idx, sim_cycle,
             false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, thread.proc_name);
     request->set_coreSignal(&core.dcache_signal);
 
@@ -2067,7 +2067,7 @@ rob_cont:
     Memory::MemoryRequest *request = core.memoryHierarchy->get_free_request(core.get_coreid());
     assert(request != NULL);
 
-    request->init(core.get_coreid(), threadid, pteaddr, idx, sim_cycle,
+    request->init(core.get_coreid(), threadid, thread.curr_pid, pteaddr, idx, sim_cycle,
             false, uop.rip.rip, uop.uuid, Memory::MEMORY_OP_READ, thread.proc_name);
     request->set_coreSignal(&core.dcache_signal);
 
@@ -2815,6 +2815,7 @@ W64 ReorderBufferEntry::annul(bool keep_misspec_uop, bool return_first_annulled_
             bool is_store = isclass(annulrob.uop.opcode, OPCLASS_STORE);
             core.memoryHierarchy->annul_request(core.get_coreid(),
                     threadid,
+					thread.curr_pid,
                     annulrob.idx/*robid*/,
                     annulrob.lsq->physaddr << 3,
                     false/* icache */,

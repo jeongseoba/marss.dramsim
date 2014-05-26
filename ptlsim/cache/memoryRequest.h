@@ -58,6 +58,7 @@ class MemoryRequest: public selfqueuelink
 		void reset() {
 			coreId_ = 0;
 			threadId_ = 0;
+			processId_ = 0;
 			physicalAddress_ = 0;
 			robId_ = 0;
 			cycles_ = 0;
@@ -79,6 +80,7 @@ class MemoryRequest: public selfqueuelink
 
 		void init(W8 coreId,
 				W8 threadId,
+				target_ulong processId,
 				W64 physicalAddress,
 				int robId,
 				W64 cycles,
@@ -116,6 +118,7 @@ class MemoryRequest: public selfqueuelink
 		int get_coreid() { return int(coreId_); }
 		
 		char* get_procname() { return procName_; }
+		target_ulong get_processid() { return processId_; }
 
 		int get_threadid() { return int(threadId_); }
 
@@ -155,6 +158,7 @@ class MemoryRequest: public selfqueuelink
 		{
 			os << "Memory Request: core[", coreId_, "] ";
 			os << "thread[", threadId_, "] ";
+			os << "process[", processId_, "] ";
 			os << "address[0x", hexstring(physicalAddress_, 48), "] ";
 			os << "robid[", robId_, "] ";
 			os << "init-cycle[", cycles_, "] ";
@@ -184,6 +188,7 @@ class MemoryRequest: public selfqueuelink
 		stringbuf *history;
         Signal *coreSignal_;
 		char* procName_;
+		target_ulong processId_;
 
 };
 

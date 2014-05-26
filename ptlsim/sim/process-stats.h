@@ -78,11 +78,16 @@ struct ProcessStats : public Statable
 				  , write("write", this)
 			{}
 		} miss;
+				
+		StatObj<W64> eviction;
+		StatObj<W64> zero_reuse;
 
 		cache(Statable *parent)
 			: Statable("cache", parent)
 			  , hit(this)
 			  , miss(this)
+			  , eviction("eviction", this)
+			  , zero_reuse("zero_reuse", this)
 		{}
 	} cache;
 

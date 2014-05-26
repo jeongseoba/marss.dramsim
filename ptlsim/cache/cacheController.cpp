@@ -500,9 +500,23 @@ bool CacheController::cache_insert_cb(void *arg)
 			}
 		}
 
+		ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(queueEntry->request->get_procname());
+		/*
+		if ( type_ == L3_CACHE && line->pid != queueEntry->request->get_processid() && line->accessed == true ) {
+		}
+		*/
+
+		if ( type_ == L3_CACHE ) {
+			N_STAT_UPDATE((*pstat)->cache.eviction, ++, queueEntry->request->is_kernel());
+
+			if ( ! line->accessed ) {
+				N_STAT_UPDATE((*pstat)->cache.zero_reuse, ++, queueEntry->request->is_kernel());
+			}
+		}
+
         line->state = LINE_VALID;
         line->init(cacheLines_->tagOf(queueEntry->request->
-                    get_physical_address()));
+                    get_physical_address()), queueEntry->request->get_processid());
 
 		queueEntry->eventFlags[CACHE_INSERT_COMPLETE_EVENT]++;
 		marss_add_event(&cacheInsertComplete_,
@@ -569,6 +583,8 @@ bool CacheController::cache_access_cb(void *arg)
 
 				// Jeongseob
 				if ( type_ == L3_CACHE ) {
+				
+					line->accessed = true;
 
 					assert (queueEntry->request->get_procname() );
 					ProcessStats **pstat = memoryHierarchy_->get_machine().process_stats.get(queueEntry->request->get_procname());
